@@ -4,11 +4,11 @@ A few scripts for monitoring Gerrit on review.openstack.org
 
 ## Setting up
 
-  * clone the nova repository
-
+   * clone the nova repository
+        
         $ git clone https://github.com/openstack/nova.git
 
-  * Set up virtual env.  Follow steps to get `run_tests.py` working
+   * Set up virtual env.  Follow steps to get `run_tests.py` working
 
         $ cd nova
         $ ./run_tests.sh
