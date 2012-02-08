@@ -57,7 +57,7 @@ IO.popen("#{cmd}") { |p| p.each{ |line|
       yn = get_character
       if yn==121
           puts "running unit tests ..."
-          `git fetch https://@review.openstack.org/p/openstack/nova #{blob['ref']}   &>/dev/null  && git checkout FETCH_HEAD &> /dev/null`
+          `git fetch https://@review.openstack.org/p/openstack/nova #{blob['ref']}   2>/dev/null  && git checkout FETCH_HEAD 2> /dev/null`
           system("./run_tests.sh","-x")
           puts "#{url}"
           puts "tests done.  Press any key to continue ..."

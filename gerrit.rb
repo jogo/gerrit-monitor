@@ -68,7 +68,7 @@ data.each_line(){|line|
     }
     if test 
       puts "subject: #{blob['subject']}  \n\t url: #{blob['url']}"
-      `git fetch https://review.openstack.org/p/openstack/nova #{blob['currentPatchSet']['ref']}   &>/dev/null  && git checkout FETCH_HEAD &> /dev/null`
+      `git fetch https://review.openstack.org/p/openstack/nova #{blob['currentPatchSet']['ref']}   2>/dev/null  && git checkout FETCH_HEAD 2> /dev/null`
       puts "\trunning pep8 tests..."
       pep8 = `./run_tests.sh -p`
       if pep8.size()>20 
