@@ -4,7 +4,9 @@ A few scripts for monitoring Gerrit on review.openstack.org
 
 ## Setting up
 
-   * clone the nova repository
+   * Make sure you are on a machine that has access to your gerrit keys
+
+   * Clone the nova repository (inside this directory)
         
         $ git clone https://github.com/openstack/nova.git
 
@@ -12,3 +14,8 @@ A few scripts for monitoring Gerrit on review.openstack.org
 
         $ cd nova
         $ ./run_tests.sh
+
+   * Once your virtual environment is built you can now run the gerrit monitors
+
+        $ ./gerrit.rb -u username
+        $ ./gerrit-stream.rb -u username
