@@ -2,8 +2,6 @@
 require 'rubygems'
 require 'json'
 require 'optparse'
-require "highline/system_extensions"
-include HighLine::SystemExtensions
 
 options = {}
 OptionParser.new do |opts|
@@ -18,6 +16,17 @@ unless options[:username]
   exit
 end
 
+def getc() 
+      begin
+        STDIN.flush
+        system("stty raw -echo")
+        char = STDIN.getc
+      ensure
+        system("stty -raw echo")
+      end
+      puts char
+      return char
+end
 
 cmd = "ssh #{options[:username]}@review.openstack.org -p 29418 gerrit stream-events"
 
@@ -54,15 +63,14 @@ IO.popen("#{cmd}") { |p| p.each{ |line|
           "#{blob['change']['topic']}\n\tbranch: #{blob['change']['branch']}\n"\
           "\tsubject: #{blob['change']['subject']}"
       puts "run tests y/n?"
-      yn = get_character
-      if yn==121
+      if getc()=='y'
           puts "running unit tests ..."
           `git fetch https://@review.openstack.org/p/openstack/nova #{blob['ref']}   2>/dev/null  && git checkout FETCH_HEAD 2> /dev/null`
           system("./run_tests.sh","-x")
           puts "#{url}"
           puts "tests done.  Press any key to continue ..."
           `git checkout master 2> /dev/null`
-          cont = get_character
+          cont = getc()
       else
           puts "no testing.  listining..."
       end
