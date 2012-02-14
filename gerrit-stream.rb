@@ -3,6 +3,13 @@ require 'rubygems'
 require 'json'
 require 'optparse'
 
+
+# needs ruby 1.9 or greater
+if RUBY_VERSION < "1.9"
+  puts "Requires Ruby 1.9 or above"
+  exit
+end
+
 options = {}
 OptionParser.new do |opts|
   opts.banner = "Usage: gerrit.rb -u username [options]"
@@ -16,7 +23,7 @@ unless options[:username]
   exit
 end
 
-def getc() 
+def get_key() 
       begin
         STDIN.flush
         system("stty raw -echo")
@@ -63,14 +70,14 @@ IO.popen("#{cmd}") { |p| p.each{ |line|
           "#{blob['change']['topic']}\n\tbranch: #{blob['change']['branch']}\n"\
           "\tsubject: #{blob['change']['subject']}"
       puts "run tests y/n?"
-      if getc()=='y'
+      if get_key()=='y'
           puts "running unit tests ..."
-          `git fetch https://@review.openstack.org/p/openstack/nova #{blob['ref']}   2>/dev/null  && git checkout FETCH_HEAD 2> /dev/null`
+          `git fetch https://review.openstack.org/p/openstack/nova #{blob['patchSet']['ref']} 2>/dev/null   && git checkout FETCH_HEAD 2>/dev/null`
           system("./run_tests.sh","-x")
           puts "#{url}"
           puts "tests done.  Press any key to continue ..."
           `git checkout master 2> /dev/null`
-          cont = getc()
+          cont = get_key()
       else
           puts "no testing.  listining..."
       end

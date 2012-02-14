@@ -28,6 +28,20 @@ cmd = "ssh #{options[:username]}@review.openstack.org -p 29418 gerrit query \"st
       "--current-patch-set --format JSON\""
 
 
+def get_key() 
+      begin
+        STDIN.flush
+        system("stty raw -echo")
+        char = STDIN.getc
+      ensure
+        system("stty -raw echo")
+      end
+      puts char
+      return char
+end
+
+
+
 #TODO add support for ending at specific URL, and print first URL run at end of program, to use for next time.
 #TODO Add in `ssh review gerrit stream-events` support
 
@@ -81,13 +95,13 @@ data.each_line(){|line|
         puts "\t#{blob['url']}"
 
         puts "\tRun unit tests? y/n"
-        yn = STDIN.getc 
-        if yn==121
-            puts "running unit tests ..."
-            system("./run_tests.sh","-x", "-P")
+        yn = get_key()
+        if yn=='y'
+          puts "running unit tests ..."
+          system("./run_tests.sh","-x", "-P")
+          puts "tests DONE, press any key to continue ..."
+          get_key()
         end
-      puts "tests DONE, press any key to continue ..."
-      STDIN.getc 
       else
         puts "\tpep8 test PASSED"
       end
