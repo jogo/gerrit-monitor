@@ -98,7 +98,7 @@ data.each_line(){|line|
         yn = get_key()
         if yn=='y'
           puts "running unit tests ..."
-          system("./run_tests.sh","-x", "-P")
+          system("./run_tests.sh","-x")
           puts "tests DONE, press any key to continue ..."
           get_key()
         end
