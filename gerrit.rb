@@ -3,6 +3,14 @@ require 'rubygems'
 require 'json'
 require 'optparse'
 
+# needs ruby 1.9 or greater
+if RUBY_VERSION < "1.9"
+  puts "Requires Ruby 1.9 or above"
+  exit
+end
+
+
+
 status  =  'open'
 project =  'nova'
 branch  =  'master'
