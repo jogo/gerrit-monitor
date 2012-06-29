@@ -3,6 +3,7 @@ require 'rubygems'
 require 'json'
 require 'optparse'
 require 'pp'
+require 'pty'
 
 options = {}
 OptionParser.new do |opts|
@@ -18,18 +19,6 @@ end.parse!
 unless options[:username]
   $stderr.puts "Error: --username is required"
   exit
-end
-
-def get_key() 
-      begin
-        STDIN.flush
-        system("stty raw -echo")
-        char = STDIN.getc
-      ensure
-        system("stty -raw echo")
-      end
-      puts char
-      return char
 end
 
 cmd = "ssh #{options[:username]}@review.openstack.org -p 29418 gerrit stream-events"
@@ -69,14 +58,20 @@ def growl(highlights)
     `echo "#{str}" | growlnotify  #{project} -d 42 --image openstack.png`
 end
 
-IO.popen("#{cmd}") { |p| p.each{ |line| 
+
+Thread.new do
+  while true
+    c = STDIN.getc()
+    system('clear')
+  end
+end
+
+PTY.spawn("#{cmd}") { |r,w,pid| r.each{ |line| 
     blob = JSON.parse(line)
-    if blob['change'] and blob['change']['project']=='openstack/nova'
-        puts JSON.pretty_generate(blob)
-    end
+    puts  "---------"
+    puts Time.now.getlocal.strftime("Time: %T")
     highlights = extract(blob) 
     pp highlights
-    puts  "---------"
     if options[:growl]
         growl(highlights)
     end
