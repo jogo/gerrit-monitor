@@ -1,21 +1,23 @@
-# Nova Gerrit Monitor
+# Gerrit Monitor
 
-A few scripts for monitoring Gerrit on review.openstack.org
+A script for monitoring Gerrit reviews, with growl notifications.
 
-## Setting up
+Designed for review.openstack.org
 
-   * Make sure you are on a machine that has access to your gerrit keys
+## Usage
 
-   * Clone the nova repository (inside this directory)
-        
-        $ git clone https://github.com/openstack/nova.git
+Usage: gerrit-monitor.rb -u username [options]
+    -u, --username username          gerrit username - required
+    -g, --growl                      use growl notifications
+    -H, --host hostname              gerrit host
+    -h, --help                       Show this messege
 
-   * Set up virtual env.  Follow steps to get `run_tests.py` working
+## Running
 
-        $ cd nova
-        $ ./run_tests.sh
+   * Make sure you are on a machine that has access to your Gerrit keys
+   
+   * Optionally install growl-notify
 
-   * Once your virtual environment is built you can now run the gerrit monitors
+   * Run gerrit-monitor
 
-        $ ./gerrit.rb -u username
-        $ ./gerrit-stream.rb -u username
+        $ ./gerrit-monitor.rb --username <gerrit-username> --growl --host review.openstack.org

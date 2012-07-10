@@ -5,23 +5,38 @@ require 'optparse'
 require 'pp'
 require 'pty'
 
-options = {}
+$options = {}
 OptionParser.new do |opts|
-  opts.banner = "Usage: gerrit.rb -u username [options]"
+  opts.banner = "Usage: gerrit-monitor.rb -u username [options]"
   opts.on("-u username","--username username", "gerrit username - required") do |u|
-    options[:username] = u
+    $options[:username] = u
   end
   opts.on("-g","--growl", "use growl notifications") do |g|
-    options[:growl] = g
+    $options[:growl] = g
+  end
+  opts.on("-H hostname","--host hostname", "gerrit host") do |host|
+    $options[:host] = host
+  end
+  opts.on_tail("-h","--help", "Show this messege") do 
+    puts opts
+    exit 
   end
 end.parse!
 
-unless options[:username]
+unless $options[:username]
   $stderr.puts "Error: --username is required"
   exit
 end
 
-cmd = "ssh #{options[:username]}@review.openstack.org -p 29418 gerrit stream-events"
+# default host - review.openstack.org
+unless $options[:host]
+  $options[:host] = "review.openstack.org"
+end
+
+puts $options[:host]
+
+
+cmd = "ssh #{$options[:username]}@#{$options[:host]} -p 29418 gerrit stream-events"
 
 puts cmd 
 
@@ -55,7 +70,7 @@ def growl(highlights)
     project = hl.delete('project')
     str = "" 
     hl.each{|k,v| str+="#{k}: #{v}\n"}
-    `echo "#{str}" | growlnotify  #{project} -d 42 --image openstack.png`
+    `echo "#{str}" | growlnotify  #{project} -d 42 --image #{$options[:host]}.png`
 end
 
 
@@ -72,7 +87,7 @@ PTY.spawn("#{cmd}") { |r,w,pid| r.each{ |line|
     puts Time.now.getlocal.strftime("Time: %T")
     highlights = extract(blob) 
     pp highlights
-    if options[:growl]
+    if $options[:growl]
         growl(highlights)
     end
 }}
