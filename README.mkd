@@ -4,14 +4,6 @@ A script for monitoring Gerrit reviews, with growl notifications.
 
 Designed for review.openstack.org
 
-## Usage
-
-Usage: gerrit-monitor.rb -u username [options]
-    -u, --username username          gerrit username - required
-    -g, --growl                      use growl notifications
-    -H, --host hostname              gerrit host
-    -h, --help                       Show this messege
-
 ## Running
 
    * Make sure you are on a machine that has access to your Gerrit keys
