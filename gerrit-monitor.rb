@@ -17,9 +17,9 @@ OptionParser.new do |opts|
   opts.on("-H hostname","--host hostname", "gerrit host") do |host|
     $options[:host] = host
   end
-  opts.on_tail("-h","--help", "Show this messege") do 
+  opts.on_tail("-h","--help", "Show this messege") do
     puts opts
-    exit 
+    exit
   end
 end.parse!
 
@@ -38,7 +38,7 @@ puts $options[:host]
 
 cmd = "ssh #{$options[:username]}@#{$options[:host]} -p 29418 gerrit stream-events"
 
-puts cmd 
+puts cmd
 
 
 # extract information we want
@@ -51,8 +51,9 @@ def extract(blob)
         highlights['project'] = blob['change']['project']
         highlights['subject'] = blob['change']['subject']
         highlights['url'] = blob['change']['url']
-        if blob['type']=="comment-added"  
+        if blob['type']=="comment-added"
             highlights['author'] = blob['author']['name']
+            highlights['comment'] = blob['comment']
         elsif  blob['type']=="change-merged"
             highlights['submitter'] = blob['submitter']['name']
         elsif blob['type']=="change-abandoned"
@@ -62,13 +63,13 @@ def extract(blob)
         end
     end
 
-    return highlights 
+    return highlights
 end
 
 def growl(highlights)
     hl = highlights.clone
     project = hl.delete('project')
-    str = "" 
+    str = ""
     hl.each{|k,v| str+="#{k}: #{v}\n"}
     `echo "#{str}" | growlnotify  #{project} -d 42 --image #{$options[:host]}.png`
 end
@@ -81,13 +82,13 @@ Thread.new do
   end
 end
 
-PTY.spawn("#{cmd}") { |r,w,pid| r.each{ |line| 
+PTY.spawn("#{cmd}") { |r,w,pid| r.each{ |line|
     blob = JSON.parse(line)
     puts  "---------"
     puts Time.now.getlocal.strftime("Time: %T")
-    highlights = extract(blob) 
+    highlights = extract(blob)
     pp highlights
-    if $options[:growl]
+    if $options[:growl] and highlights['project']=='openstack/nova'
         growl(highlights)
     end
 }}
