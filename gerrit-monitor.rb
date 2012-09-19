@@ -54,6 +54,9 @@ def extract(blob)
         if blob['type']=="comment-added"
             highlights['author'] = blob['author']['name']
             highlights['comment'] = blob['comment']
+            if blob['approvals']
+              highlights['approval-values'] = blob['approvals'].map{|x| x['value']}
+            end
         elsif  blob['type']=="change-merged"
             highlights['submitter'] = blob['submitter']['name']
         elsif blob['type']=="change-abandoned"
