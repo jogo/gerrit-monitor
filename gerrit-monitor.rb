@@ -11,8 +11,8 @@ OptionParser.new do |opts|
   opts.on("-u username","--username username", "gerrit username - required") do |u|
     $options[:username] = u
   end
-  opts.on("-g","--growl", "use growl notifications") do |g|
-    $options[:growl] = g
+  opts.on("-n","--notify", "use notifications") do |n|
+    $options[:notify] = n
   end
   opts.on("-H hostname","--host hostname", "gerrit host") do |host|
     $options[:host] = host
@@ -69,12 +69,39 @@ def extract(blob)
     return highlights
 end
 
-def growl(highlights)
+class Notify
+  def initialize()
+    if RUBY_PLATFORM.include?('linux')
+      @@type = :linux
+    else
+      @@type = :growl
+    end
+  end
+
+  def notify(highlights)
+    if @@type == :growl
+     growl(highlights)
+    elsif @@type == :linux
+     linux(highlights)
+    end 
+  end
+
+  def linux(highlights)
+    hl = highlights.clone
+    project = hl.delete('project')
+    str = ""
+    hl.each{|k,v| str+="#{k}: #{v}\n"}
+    `notify-send #{project} "#{str}" `
+
+  end
+
+  def growl(highlights)
     hl = highlights.clone
     project = hl.delete('project')
     str = ""
     hl.each{|k,v| str+="#{k}: #{v}\n"}
     `echo "#{str}" | growlnotify  #{project} -d 42 --image #{$options[:host]}.png`
+  end
 end
 
 
@@ -85,13 +112,14 @@ Thread.new do
   end
 end
 
+notify = Notify.new()
 PTY.spawn("#{cmd}") { |r,w,pid| r.each{ |line|
     blob = JSON.parse(line)
     puts  "---------"
     puts Time.now.getlocal.strftime("Time: %T")
     highlights = extract(blob)
     pp highlights
-    if $options[:growl] and highlights['project']=='openstack/nova'
-        growl(highlights)
+    if $options[:notify] and highlights['project']=='openstack/nova'
+        notify.notify(highlights)
     end
 }}

@@ -1,15 +1,19 @@
 # Gerrit Monitor
 
-A script for monitoring Gerrit reviews, with growl notifications.
+A tool for monitoring Gerrit review streams via shell and notifications.
 
 Designed for review.openstack.org
+
+Supports growl and libnotify
 
 ## Running
 
    * Make sure you are on a machine that has access to your Gerrit keys
    
-   * Optionally install growl-notify
+   * Optionally install growl-notify or libnotify
+
+   * Optionally configure projects to filter [Future]
 
    * Run gerrit-monitor
 
-        $ ./gerrit-monitor.rb --username <gerrit-username> --growl --host review.openstack.org
+        $ ./gerrit-monitor.rb --username <gerrit-username> --notify --host review.openstack.org
